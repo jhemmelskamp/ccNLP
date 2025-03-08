@@ -1,25 +1,25 @@
 FROM openjdk:8-jdk
 
-# Set the maintainer using LABEL (MAINTAINER is deprecated)
 LABEL maintainer="Casey Hilland <casey.hilland@gmail.com>"
 
-# Update package list and install dependencies, then clean up apt cache
+# Update package list and install dependencies including Python and pip, then clean up apt cache
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     wget \
     unzip \
-    python-setuptools \
+    python \
+    python-pip \
  && rm -rf /var/lib/apt/lists/*
 
-# Install pip via easy_install and upgrade pip
-RUN easy_install pip && pip install --upgrade pip
+# Upgrade pip to the latest version
+RUN pip install --upgrade pip
 
 # Copy your source code into /src and install Python dependencies
 ADD . /src
 RUN pip install -r /src/requirements.txt
 
-# Create a directory for Stanford NLP tools, download, and unzip the package
+# Download and set up Stanford NLP tools
 RUN mkdir -p /home/ubuntu && \
     cd /home/ubuntu && \
     wget http://nlp.stanford.edu/software/stanford-corenlp-full-2015-04-20.zip && \
