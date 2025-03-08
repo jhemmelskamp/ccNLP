@@ -2,22 +2,23 @@ FROM openjdk:8-jdk
 
 LABEL maintainer="Casey Hilland <casey.hilland@gmail.com>"
 
-# Update package list and install dependencies including Python and pip, then clean up apt cache
+# Update package list and install required packages including Python.
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     wget \
     unzip \
     python \
-    python-pip \
  && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip to the latest version
-RUN pip install --upgrade pip
+# Install pip for Python 2.7 using the official bootstrap script.
+RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
 
-# Copy your source code into /src and install Python dependencies
+# Upgrade pip and install Python dependencies from requirements.txt
 ADD . /src
-RUN pip install -r /src/requirements.txt
+RUN pip install --upgrade pip && pip install -r /src/requirements.txt
 
 # Download and set up Stanford NLP tools
 RUN mkdir -p /home/ubuntu && \
@@ -30,8 +31,8 @@ RUN mkdir -p /home/ubuntu && \
 # Set the working directory
 WORKDIR /src
 
-# Expose the port your application listens on
+# Expose the application port
 EXPOSE 5000
 
-# Define the command to run your application
+# Run the application
 CMD ["python", "app.py"]
