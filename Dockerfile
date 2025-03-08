@@ -1,4 +1,4 @@
-FROM java:8
+FROM openjdk:8-jdk
 
 MAINTAINER Casey Hilland <casey dot hilland at gmail dot com>
 
